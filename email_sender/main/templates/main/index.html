@@ -1,0 +1,123 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email Sender</title>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}">
+    <style>
+      .container {
+        border-style: solid;
+        border-color: red;
+        border-left-width: 3px;
+        border-right-width: 3px;
+        border-top-width: 0px;
+        border-bottom-width: 0px;
+        background-color: gold;
+      }
+      body {
+        background-color: white;
+      }
+      label {
+        font-size: 20px;
+        font-family: "monospace";
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>You can send the same E-mail to several persons. Write in title and body "{name}" were you want to put receivers full name</h3>
+      <br>
+      <form class="form" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="title">Title: </label>
+          <br>
+          <input type="text" name="title" id="title" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="message">Body: </label>
+          <br>
+          <textarea name="message" id="message" rows="8" cols="80" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="email">Add receiver: </label>
+          <br>
+          <input type="text" id="fname" class="form-control" placeholder="Full name">
+          <br>
+          <input type="email" id="email" placeholder="E-mail" class="form-control">
+          <br>
+          <button type="button" id="add_receiver" class="btn btn-dark bg-dark">Add</button>
+          <br>
+        </div>
+        <div id="msg"></div>
+        <ul class="list-group" id="receivers"></ul>
+        <br>
+        <input type="hidden" id="receivers_names" name="receivers_names">
+        <input type="hidden" id="receivers_emails" name="receivers_emails">
+        <input type="submit" value="Send" class="form-control btn btn-danger bg-danger">
+        <br>
+        <br>
+        <br>
+      </form>
+    </div>
+    <script src="{% static 'jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <script>
+      var names                     = [],
+          emails                    = [],
+          receivers                 = $("#receivers"),
+          success_msg_text          = "<div class='alert alert-success alert-dismissible'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Success!</strong> Emails were sent.</div>",
+          error_msg_text = "<div class='alert alert-danger alert-dismissible'><button type='button' class='close' data-dismiss='alert'>&times;</button><strong>Error!</strong> This email already in list.</div>";
+
+      $(document).ready(function() {
+        $("#add_receiver").click(function () {
+          if (!emails.includes($("#email").val())) {
+            emails.push($("#email").val());
+            names.push($("#fname").val());
+            let receiver = "<li class='list-group-item d-flex justify-content-between align-items-center'><span style=\"font-family: 'Comic Sans MS'\"><em>" + $("#fname").val() + "</em></span> <span class='text-primary'>" + $("#email").val() + "</span><button type='button' class='badge badge-danger badge-pill' onclick='remove (\"" + $("#email").val() + "\");'>&times;</button></li>";
+            $("#receivers_names").val(names.toString());
+            $("#receivers_emails").val(emails.toString());
+            console.log(names.toString());
+            console.log(emails.toString());
+            receivers.html(receivers.html() + receiver);
+            $("#fname").val("");
+            $("#email").val("");
+          } else {
+            $("#msg").html(error_msg_text);
+          }
+        });
+      });
+
+
+      function remove (adress) {
+        let new_receivers_emails = [],
+            new_receivers_names = [];
+        for (let i = 0; i < emails.length; i++) {
+          if (adress == emails[i]) {
+            continue;
+          }
+          new_receivers_emails.push(emails[i]);
+          new_receivers_names.push(names[i]);
+        }
+        console.log(emails);
+        console.log(new_receivers_emails);
+        emails = new_receivers_emails;
+        names = new_receivers_names;
+        receivers.html("");
+        $("#receivers_names").val(names.toString());
+        $("#receivers_emails").val(emails.toString());
+        for (let i = 0; i < emails.length; i++) {
+          receiver = "<li class='list-group-item d-flex justify-content-between align-items-center'><span style=\"font-family: 'Comic Sans MS'\"><em>" + names[i] + "</em></span> <span class='text-primary'>" + emails[i] + "</span><button type='button' class='badge badge-danger badge-pill' onclick='remove (\"" + emails[i] + "\");'>&times;</button></li>";
+
+          receivers.html(receivers.html() + receiver);
+        }
+
+      }
+
+      
+    </script>
+  </body>
+</html>
