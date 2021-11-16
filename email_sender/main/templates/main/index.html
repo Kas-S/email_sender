@@ -52,7 +52,24 @@
           <button type="button" id="add_receiver" class="btn btn-dark bg-dark">Add</button>
           <br>
         </div>
-        <div id="msg"></div>
+        <div id="msg">
+          {% if data == "success" %}
+          <div class='alert alert-success alert-dismissible'>
+            <button type='button' class='close' data-dismiss='alert'>&times;</button>
+            <strong>Success!</strong> Emails were sent.
+          </div>
+          {% elif data == "error_title_body" %}
+          <div class='alert alert-danger alert-dismissible'>
+            <button type='button' class='close' data-dismiss='alert'>&times;</button>
+            <strong>Error!</strong> Title and body must not be empty.
+          </div>
+          {% elif data == "error_receivers" %}
+          <div class='alert alert-danger alert-dismissible'>
+            <button type='button' class='close' data-dismiss='alert'>&times;</button>
+            <strong>Error!</strong> You must add receivers to send mail.
+          </div>
+          {% endif %}
+        </div>
         <ul class="list-group" id="receivers"></ul>
         <br>
         <input type="hidden" id="receivers_names" name="receivers_names">
